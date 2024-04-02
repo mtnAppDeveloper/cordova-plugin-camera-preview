@@ -716,12 +716,21 @@
 
 // Find a camera with the specified AVCaptureDevicePosition, returning nil if one is not found
 - (AVCaptureDevice *) cameraWithPosition:(AVCaptureDevicePosition) position {
-  NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-  for (AVCaptureDevice *device in devices){
-    if ([device position] == position)
-      return device;
-  }
-  return nil;
+  // NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+  // for (AVCaptureDevice *device in devices){
+  //   if ([device position] == position)
+  //     return device;
+  // }
+  // return nil;
+  // Use AVCaptureDeviceDiscoverySession to find the wide angle camera
+    AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInWideAngleCamera] mediaType:AVMediaTypeVideo position:position];
+    NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
+    for (AVCaptureDevice *device in devices) {
+        if (device.position == position) {
+            return device;
+        }
+    }
+    return nil;
 }
 
 @end
