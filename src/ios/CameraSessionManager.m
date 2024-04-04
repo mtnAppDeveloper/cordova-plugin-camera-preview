@@ -723,7 +723,7 @@
   // }
   // return nil;
   // Use AVCaptureDeviceDiscoverySession to find the wide angle camera
-    AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInWideAngleCamera] mediaType:AVMediaTypeVideo position:position];
+    AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInUltraWideCamera] mediaType:AVMediaTypeVideo position:position];
     NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
     for (AVCaptureDevice *device in devices) {
         if (device.position == position) {
