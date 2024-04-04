@@ -723,14 +723,35 @@
   // }
   // return nil;
   // Use AVCaptureDeviceDiscoverySession to find the wide angle camera
-    AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInUltraWideCamera] mediaType:AVMediaTypeVideo position:position];
-    NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
-    for (AVCaptureDevice *device in devices) {
-        if (device.position == position) {
-            return device;
-        }
-    }
-    return nil;
+  // AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInUltraWideCamera] mediaType:AVMediaTypeVideo position:position];
+  // NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
+  // for (AVCaptureDevice *device in devices) {
+  //     if (device.position == position) {
+  //         return device;
+  //     }
+  // }
+  // return nil;
+
+  // 最初に超広角カメラを試みる(iPhone13pro以降のみを対象)
+  AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInUltraWideCamera] mediaType:AVMediaTypeVideo position:position];
+  NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
+  for (AVCaptureDevice *device in devices) {
+      if (device.position == position) {
+          return device;
+      }
+  }
+
+  // 超広角カメラが見つからない場合は、広角カメラを試みる（これはほぼすべてのiPhoneで使えるはず）
+  discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInWideAngleCamera] mediaType:AVMediaTypeVideo position:position];
+  devices = discoverySession.devices;
+  for (AVCaptureDevice *device in devices) {
+      if (device.position == position) {
+          return device;
+      }
+  }
+
+  // 適切なカメラが見つからない場合はnilを返す
+  return nil;
 }
 
 @end
