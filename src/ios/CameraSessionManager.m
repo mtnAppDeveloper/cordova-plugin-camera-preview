@@ -705,8 +705,8 @@
       //Not granted access to mediaType
       dispatch_async(dispatch_get_main_queue(), ^{
           [[[UIAlertView alloc] initWithTitle:@"Error"
-                                      message:@"Camera permission not found. Please, check your privacy settings."
-                                     delegate:self
+                                    message:@"Camera permission not found. Please, check your privacy settings."
+                                    delegate:self
                             cancelButtonTitle:@"OK"
                             otherButtonTitles:nil] show];
       });
@@ -739,6 +739,7 @@
   // 最初に超広角カメラを試みる(iPhone13pro以降のみを対象)
   AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInUltraWideCamera] mediaType:AVMediaTypeVideo position:position];
   NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
+  
   for (AVCaptureDevice *device in devices) {
       if (device.position == position) {
           return device;
@@ -748,7 +749,7 @@
 
 
   // 超広角カメラが見つからない場合は、広角カメラを試みる（これはほぼすべてのiPhoneで使えるはず）
-  NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+  devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
   for (AVCaptureDevice *device in devices){
     if ([device position] == position)
       return device;
