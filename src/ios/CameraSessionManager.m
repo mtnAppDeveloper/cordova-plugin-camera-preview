@@ -736,31 +736,25 @@
   // return nil;
 
   /** version 2.0 **/
-  // 最初に超広角カメラを試みる(iPhone13pro以降のみを対象)
-  AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInUltraWideCamera] mediaType:AVMediaTypeVideo position:position];
+  AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInUltraWideCamera, AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInTelephotoCamera] mediaType:AVMediaTypeVideo position:position];
   NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
-  
-  for (AVCaptureDevice *device in devices) {
-      if (device.position == position) {
-          return device;
-      }
+
+  if (devices.count >= 3) {
+    // 最初に超広角カメラを試みる(iPhone13pro以降のみを対象)
+    discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInUltraWideCamera] mediaType:AVMediaTypeVideo position:position];
+    devices = discoverySession.devices;
+    for (AVCaptureDevice *device in devices) {
+        if (device.position == position) {
+            return device;
+        }
+    }
+  } else {
+    devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    for (AVCaptureDevice *device in devices){
+      if ([device position] == position)
+        return device;
+    }
   }
-
-
-
-  // 超広角カメラが見つからない場合は、広角カメラを試みる（これはほぼすべてのiPhoneで使えるはず）
-  devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-  for (AVCaptureDevice *device in devices){
-    if ([device position] == position)
-      return device;
-  }
-  // discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInWideAngleCamera] mediaType:AVMediaTypeVideo position:position];
-  // devices = discoverySession.devices;
-  // for (AVCaptureDevice *device in devices) {
-  //     if (device.position == position) {
-  //         return device;
-  //     }
-  // }
 
   // 適切なカメラが見つからない場合はnilを返す
   return nil;
