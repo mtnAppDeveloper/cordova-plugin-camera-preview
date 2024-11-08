@@ -739,22 +739,47 @@
   AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInUltraWideCamera, AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInTelephotoCamera] mediaType:AVMediaTypeVideo position:position];
   NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
 
-  if (devices.count >= 3) {
-    // 最初に超広角カメラを試みる(iPhone13pro以降のみを対象)
-    discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInUltraWideCamera] mediaType:AVMediaTypeVideo position:position];
-    devices = discoverySession.devices;
-    for (AVCaptureDevice *device in devices) {
-        if (device.position == position) {
+  // if (devices.count >= 3) {
+  //   // 最初に超広角カメラを試みる(iPhone13pro以降のみを対象)
+  //   discoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInUltraWideCamera] mediaType:AVMediaTypeVideo position:position];
+  //   devices = discoverySession.devices;
+  //   for (AVCaptureDevice *device in devices) {
+  //       if (device.position == position) {
+  //           return device;
+  //       }
+  //   }
+  // } else {
+  //   devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+  //   for (AVCaptureDevice *device in devices){
+  //     if ([device position] == position)
+  //       return device;
+  //   }
+  // }
+
+  for (AVCaptureDevice *device in devices) {
+    if (device.position == position) {
+        // 接写に適している超広角カメラが利用可能ならそれを使用
+        if ([device.deviceType isEqualToString:AVCaptureDeviceTypeBuiltInUltraWideCamera]) {
             return device;
         }
     }
-  } else {
-    devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-    for (AVCaptureDevice *device in devices){
-      if ([device position] == position)
-        return device;
-    }
   }
+
+  // 超広角がない場合、広角カメラを試みる
+  devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+  for (AVCaptureDevice *device in devices) {
+      if (device.position == position && [device.deviceType isEqualToString:AVCaptureDeviceTypeBuiltInWideAngleCamera]) {
+          return device;
+      }
+  }
+
+  // 超広角・広角が利用できない場合、最後のフォールバックとして他のカメラを使用
+  for (AVCaptureDevice *device in devices) {
+      if (device.position == position) {
+          return device;
+      }
+  }
+
 
   // 適切なカメラが見つからない場合はnilを返す
   return nil;
