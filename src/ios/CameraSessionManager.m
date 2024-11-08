@@ -146,6 +146,21 @@
         [self.session addOutput:dataOutput];
       }
 
+      // Set initial zoom factor
+      if ([videoDevice lockForConfiguration:&error]) {
+        CGFloat initialZoomFactor = 2.0; // ここでズームレベルを設定します。1.0がデフォルトで、2.0は2倍ズームです。
+        if (initialZoomFactor <= videoDevice.activeFormat.videoMaxZoomFactor) {
+          videoDevice.videoZoomFactor = initialZoomFactor;
+        } else {
+          NSLog(@"Requested zoom factor is too high, setting to max zoom factor.");
+          videoDevice.videoZoomFactor = videoDevice.activeFormat.videoMaxZoomFactor;
+        }
+        [videoDevice unlockForConfiguration];
+      } else {
+        NSLog(@"%@", error);
+        success = FALSE;
+      }
+
       [self updateOrientation:[self getCurrentOrientation]];
       self.device = videoDevice;
 
